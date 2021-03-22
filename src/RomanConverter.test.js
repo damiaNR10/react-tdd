@@ -1,26 +1,7 @@
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react'
-
-class RomanConverter extends React.Component {
-
-    state = {
-        roman: null,
-    }
-
-    handleChange = (event) => {
-        this.setState({roman: "I"});
-    }
-
-    render() {
-        return (
-            <>
-            <label>Arabic: <input onChange = {this.handleChange} type="number" /></label>;
-            <h1>Roman: {this.state.roman ? this.state.roman : "none"}</h1>
-            </>
-        )
-    }
-}
+import RomanConverter from './RomanConverter';
 
 describe("<RomanConverter />", () => {
     afterEach(cleanup);
@@ -47,6 +28,24 @@ describe("<RomanConverter />", () => {
 
         expect(() => {
             getByText("Roman: I");
+        }).not.toThrow();
+    });
+
+    it('converts 5 to V', () => {
+        const {getByText, getByLabelText} = render(<RomanConverter />);
+        fireEvent.change(getByLabelText(/arabic/i), {target: {value: "5"}});
+
+        expect(() => {
+            getByText("Roman: V");
+        }).not.toThrow();
+    });
+
+    it('does not converts 0 to any roman number', () => {
+        const {getByText, getByLabelText} = render(<RomanConverter />);
+        fireEvent.change(getByLabelText(/arabic/i), {target: {value: "0"}});
+
+        expect(() => {
+            getByText("Roman: none");
         }).not.toThrow();
     });
 })
